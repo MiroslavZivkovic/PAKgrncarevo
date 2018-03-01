@@ -352,10 +352,10 @@ C ======================================================================
           call funCC(Fccp,ai1,aq,aem,p0tdt)
 c
 C ======================================================================
-          if(Fccp.gt.0.d0)then
-            write(3,*) 'Fccp, dlam = ',Fcc,dlam
-!            stop ' Unable to find the solution!, Fccp>0' 
-          endif 
+!          if(Fccp.gt.0.d0)then
+!            write(3,*) 'Fccp, dlam = ',Fcc,dlam
+!            stop ' Unable to find solution!, Fccp>0' 
+!          endif 
 C ======================================================================
 c         Inicijalizacija za bisekcije
           I=0
@@ -400,8 +400,8 @@ c         Inicijalizacija za bisekcije
 c            
 C=======================================================================
 CD        LOCAL LOOP
-          write(3,*)' I,      dlam,      dlama,      dlamb,      dlamc,
-     &      Fcc,       Fcca,       Fccb,       Fccc,'
+!          write(3,*)' I,      dlam,      dlama,      dlamb,      dlamc,
+!     &      Fcc,       Fcca,       Fccb,       Fccc,'
   110     I = I + 1
 c-----------------------------------------------------------------------
 c
