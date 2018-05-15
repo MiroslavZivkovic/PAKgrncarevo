@@ -1,0 +1,1939 @@
+1
+
+
+
+
+
+
+
+
+                            FINITE ELEMENT PROGRAM
+                  FOR STATIC AND DYNAMIC NONLINEAR ANALYSIS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    PPPPPPPPP         AAAA        KK      KK
+                    PPPPPPPPPP       AAAAAA       KK     KK
+                    PP      PP      AA    AA      KK    KK
+                    PP      PP     AA      AA     KK   KK
+                    PPPPPPPPPP     AA      AA     KK  KK
+                    PPPPPPPPP      AA      AA     KKKKK
+                    PP             AAAAAAAAAA     KKKKKKK
+                    PP             AAAAAAAAAA     KK    KK
+                    PP             AA      AA     KK     KK
+                    PP             AA      AA     KK      KK
+
+
+
+
+
+
+     ---------------------------  VERSION  8.00  ---------------------------
+
+
+
+
+
+
+
+
+
+
+
+                    "SVETOZAR MARKOVIC" UNIVERSITY
+                    FAKULTY OF MECHANICAL ENGINEERING
+                    SOFTWARE LABORATORY
+                    34000 KRAGUJEVAC
+                    YUGOSLAVIA
+
+
+
+
+
+
+
+
+
+
+1
+ A   C A R D   I M A G E   L I S T I N G   O F   T H E   I N P U T   D A T A
+                            C O L U M N   N U M B E R
+ CARD          1         2         3         4         5         6         7
+ NUMB 1234567890123456789012345678901234567890123456789012345678901234567890
+ ---- ----------------------------------------------------------------------
+    1 C /1/ HEADING CARD (80A1)                                             
+    2 C NASLOV                                                              
+    3 SD_4: DYNAMICS OF DEFORMABLE STRUCTURE WITH RIGID BODY                
+    4 C /2/ FORMAT FOR INPUT DATA(free format)                              
+    5 C INDFOR                                                              
+    6     2                                                                 
+    7 C /3/ BASIC DATA FOR THE PROBLEM (4I5)                                
+    8 C NP,NGELEM,NMATM,NPER,JPS,NKRT                                       
+    9    17    1    1    1         1                                        
+   10 C /3-1/ CARD WITH BASIC DATA ABOUT RIGID BODIES (4I5)                 
+   11 C KT3D,NLNC,MAXVEZ,MXRAC                                              
+   12     0    1    4    0                                                  
+   13 C /4/ BASIC DATA FOR THE PROBLEM (6I2,3X,3I5)                         
+   14 C (IOPGL(I),I=1,6),NDIN,ISOPS,ICVEL                                   
+   15  0 0 1 1 1 0  0    1    0    0    0                                   
+   16 C /5/ DATA FOR POST-PROCESSING (10I5)                                 
+   17 C NULAZ,NBLPR,NBLGR,ISTKO,NCVPR,ISTEM,ISTVN,ISTSI,ISTDE,ISTNA         
+   18     0    0    0                                                       
+   19 C /7/ DATA FOR RESTART (I5,10X,2I5,2F10.0)                            
+   20 C IREST,       NMODS,ICCGG,    TOLG,    ALFAG                         
+   21     0    0.0                                                          
+   22 C /8/ GROUP OF CARDS WITH DATA FOR TIME STEPS (2I5,F10.0)             
+   23 C   I,NKDT(I),DTDT(I)    (I=1,NPER)                                   
+   24     1  100    .0001                                                   
+   25 C /8-1/ DATA FOR DYNAMIC ANALISYS (2I5)                               
+   26 C IMASS,IDUMP                                                         
+   27     1    0                                                            
+   28 C /8-2/ DATA FOR INTEGRATION METHOD FOR DYNAMIC ANALYSIS (2I5)        
+   29 C MDVI,PIP,DIP                                                        
+   30     2    .0      .0                                                   
+   31 C /9/ DATA FOR EQULIBRIUM ITERATIONS (5I5,4F10.0,I5)                  
+   32 C METOD,MAXIT,KONVE,KONVS,KONVM,TOLE,    TOLS,     TOLM,     TOLA,NBRC
+   33     0    0    0    0    0    0.        0.         0.                  
+   34 C /10/ INPUT NODAL DATA (I5,A1,6I2,2X,3F10.0,2I5)   (K=1,NP)          
+   35 C  N,CH,(ID(N,I),I=1,6),   (CORD(N,J),J=1,3),      KORC,INDS          
+   36     1  1 1 1 0 0 1      0.         0.        0.       0               
+   37     2  0 0 1 0 0 1    100.         0.        0.       0               
+   38     3  0 0 1 0 0 1    200.         0.        0.       0               
+   39     4  1 1 1 0 0 1    300.         0.        0.       0               
+   40     5  0 0 1 0 0 1      0.       100.        0.       0               
+   41     6  0 0 1 0 0 1    100.       100.        0.       0               
+   42     7  0 0 1 0 0 1    200.       100.        0.       0               
+   43     8  0 0 1 0 0 1    300.       100.        0.       0               
+   44     9  0 0 1 0 0 1      0.       200.        0.       0               
+   45    10  0 0 1 0 0 1    100.       200.        0.       0               
+   46    11  0 0 1 0 0 1    200.       200.        0.       0               
+   47    12  0 0 1 0 0 1    300.       200.        0.       0               
+   48    13  0 0 1 0 0 1      0.       300.        0.       0               
+   49    14  0 0 1 0 0 1    100.       300.        0.       0               
+   50    15  0 0 1 0 0 1    200.       300.        0.       0               
+ ---- ----------------------------------------------------------------------
+ CARD          1         2         3         4         5         6         7
+ NUMB 1234567890123456789012345678901234567890123456789012345678901234567890
+                            C O L U M N   N U M B E R
+
+
+
+1
+ A   C A R D   I M A G E   L I S T I N G   O F   T H E   I N P U T   D A T A
+                            C O L U M N   N U M B E R
+ CARD          1         2         3         4         5         6         7
+ NUMB 1234567890123456789012345678901234567890123456789012345678901234567890
+ ---- ----------------------------------------------------------------------
+   51    16  0 0 1 0 0 1    300.       300.        0.       0               
+   52    17  0 0 1 0 0 0    150.       150.        0.       0               
+   53 C /10-01/ DATA ABOUT RIGID BODIES                                     
+   54 C a) Data about chain of rigid bodies (14I5)                          
+   55 C NKTLNC, LNCVZ, NBVEZ                                                
+   56     1    0    0                                                       
+   57 C b) data about rigid bodies within chain (2I5)                       
+   58 C NCGL, NVEZ                                                          
+   59    17    4                                                            
+   60 C c1) 2D problem-data about mass and moment of inertia for rigid bodiy
+   61        7.85d-06        1.3d-02                                        
+   62 C d) data about contour nodes of rigid bodies (14I5)                  
+   63 C NCVEZ, NCVEZ                                                        
+   64     6    7   11   10                                                  
+   65 C /10-1/ DATA ABOUT INITIAL CONDITIONS (6I5)                          
+   66 C-IPUU,IPUV,IPUA,ISUU,ISUV,ISUA                                       
+   67     0    0    0    0    0    0                                        
+   68 C /11/ DATA FOR MATERIAL MODELS (3I5)                                 
+   69 C (MODEL(I,K),I=1,3)    (K=1,NMATM)                                   
+   70     1    1    1                                                       
+   71 C /12/ DATA FOR MATERIAL (2I5,F10.0)                                  
+   72 C MOD  MAT     GUST                                                   
+   73     1    1  7.85d-10                                                  
+   74 C /12-1/ MATERIAL MODEL 1 (ELASTIC-ISOTROPIC) (two cards)             
+   75 C a) YOUNG'S MODULUS (F10.0)                                          
+   76 C-   E                                                                
+   77     2.1E04                                                            
+   78 C b) POISSON'S RATIO (F10.0)                                          
+   79 C-   V                                                                
+   80     0.3                                                               
+   81 C /13/ INPUT DATA FOR ELEMENT GROUP (8I5,3F10.0)    (I=1,NGELEM)      
+   82 C NETIP,NE,IATYP,NMODM,INDBTH,INDDTH,INDKOV,ICOEF,COEF1,COEF2,   COEF3
+   83     2    8    0    1    0                                             
+   84 C /13-2/ DATA FOR 2/D ISOPARAMETRIC ELEMENTS                          
+   85 C a) First card with basic data for the element group (3I5,F10.0)     
+   86 C IETYP,NGAUSR,NGAUSS,BETA                                            
+   87     2    2    2    0   .0                                            1
+   88 C b) Card wiht data for the current element (5I5,F10.0,I5,2F10.0)     
+   89 C NN,NMAT,IPRCO,ISNA,IPGS,THI,KORC,BTH,DTH                            
+   90     1    1    0    0    0    1.        0     0.0                      
+   91 C c) Card with nodal point data for the current element (9i5)         
+   92 C (NEL(NN,I),I=1,9)                                                   
+   93     1    2    6    5    0    0    0    0    0                         
+   94     2    1    0    0    0    1.        0     0.0                      
+   95     2    3    7    6    0    0    0    0    0                         
+   96     3    1    0    0    0    1.        0     0.0                      
+   97     3    4    8    7    0    0    0    0    0                         
+   98     4    1    0    0    0    1.        0     0.0                      
+   99     5    6   10    9    0    0    0    0    0                         
+  100     5    1    0    0    0    1.        0     0.0                      
+ ---- ----------------------------------------------------------------------
+ CARD          1         2         3         4         5         6         7
+ NUMB 1234567890123456789012345678901234567890123456789012345678901234567890
+                            C O L U M N   N U M B E R
+
+
+
+1
+ A   C A R D   I M A G E   L I S T I N G   O F   T H E   I N P U T   D A T A
+                            C O L U M N   N U M B E R
+ CARD          1         2         3         4         5         6         7
+ NUMB 1234567890123456789012345678901234567890123456789012345678901234567890
+ ---- ----------------------------------------------------------------------
+  101     7    8   12   11    0    0    0    0    0                         
+  102     6    1    0    0    0    1.        0     0.0                      
+  103     9   10   14   13    0    0    0    0    0                         
+  104     7    1    0    0    0    1.        0     0.0                      
+  105    10   11   15   14    0    0    0    0    0                         
+  106     8    1    0    0    0    1.        0     0.0                      
+  107    11   12   16   15    0    0    0    0    0                         
+  108 C /14/ DATA ABOUT TIME FUNCTIONS (4I5)                                
+  109 C NTABFT,MAXTFT                                                       
+  110     1    2                                                            
+  111 C /14-1/ GROUP OF CARDS WITH TABLES FOR TIME FUNCTIONS                
+  112 C a) data about function in a table form (2I5)                        
+  113 C IBR,IMAX                       IBR=1,NTABFT                         
+  114     1    2                                                            
+  115 C b) values for argument - function (2F10.0)                          
+  116 C (FN(I,IBR,J),I=1,2)              J=1,IMAX                           
+  117     0.      1.                                                        
+  118    10.      1.                                                        
+  119 C /15/ GENERAL DATA ABOUT LOADS (3I5.10X,3I5)                         
+  120 C NCF,NPP2,NPP3,          NPLJ,NTEMP,NZADP,INDZS                      
+  121     1    0    0    0    0    0    0    0                              
+  122 C /15-1/ CONCENTRATED LOADS DATA (3I5,F10.2,I5)           I=1,NCF     
+  123 C   N,  IP,  NC,  FAK,     KORC                                       
+  124    16    1    1 -1000.       0                                        
+  125 C /16/ TERMINATED CARD (A4)	       'STOP'                             
+  126 STOP                                                                  
+ ---- ----------------------------------------------------------------------
+ CARD          1         2         3         4         5         6         7
+ NUMB 1234567890123456789012345678901234567890123456789012345678901234567890
+                            C O L U M N   N U M B E R
+
+
+ ******************* E N D   O F   I N P U T   L I S T I N G ***************
+
+
+
+1
+ CARD NUMBER    3
+
+
+
+ ****************************************************************************
+
+ SD_4: DYNAMICS OF DEFORMABLE STRUCTURE WITH RIGID BODY                      
+
+ ****************************************************************************
+
+
+
+
+
+
+ CARD NUMBER    6
+
+
+
+           FORMAT FOR INPUT DATA ......................... INDFOR =    2
+                EQ.0; INDFOR = 1
+                EQ.1; FREE FORMAT
+                EQ.2; FIXED FORMAT
+
+
+           FORMAT FOR NODE AND ELEMENT READING ............ IND56 =    0
+                EQ.0; I5
+                EQ.1; I10
+
+
+           READ TEMPERATURE BY SEGMENTS ................ IDJERDAP =    0
+                EQ.0; NO
+                EQ.1; YES
+
+
+           INDICATOR OF EXPERIMENT......................... IOPIT =    0
+                EQ.0; NO
+                EQ.1; BS
+                EQ.2; SS
+                EQ.3; VJ
+                EQ.4; HJ
+
+
+
+
+
+
+ CARD NUMBER    9
+
+
+
+      B A S I C   D A T A   F O R   T H E   P R O B L E M
+      ---------------------------------------------------
+
+
+           TOTAL NUMBER OF NODAL POINTS ................. NP =        17
+                LE.0; PROGRAM STOP
+
+
+           TOTAL NUMBER OF DIFFERENT ELEMENT GROUPS ...... NGELEM =    1
+                EQ.0; DEFAULT SET "1"
+
+
+           TOTAL NUMBER OF DIFFERENT MATERIAL MODELS ...... NMATM =    1
+                EQ.0; DEFAULT SET "1"
+
+
+           NUMBER OF PERIODS WITH CONSTANT TIME STEPS ...... NPER =    1
+                EQ.0; DEFAULT SET TO "1"
+
+
+           TOTAL NUMBER SUBSTRUCTURES ......................  JPS =    1
+                EQ.0; JPS = 1
+
+
+           TOTAL NUMBER OF RIGID BODIES .................... NKRT =    1
+                EQ.0; NO RIGID BODIES
+
+
+           STRONG COUPLED PROBLEMS ........................ MIXED =    0
+                EQ.0; NO
+                EQ.1; DISPLACEMENT-STRESS MIXED METHOD
+                EQ.2; DISPLACEMENT-PORE PRESSURE u-p
+                EQ.3; DISPLACEMENT-PORE PRESSURE-RELATIVE DISPLACEMENT u-p-U
+
+
+           NUMBER OF CRACKS FOR J INTEGRAL ............... NCRACK =    0
+                EQ.0; NO CRACKS
+
+
+           NUMBER OF CRACKS FOR XFEM METHOD .............. NCXFEM =    0
+                EQ.0; NO CRACKS
+
+
+           NUMBER OF CRACKS FOR MESLESS (GBM) .............. IGBM =    0
+                EQ.0; NO CRACKS
+
+
+
+
+
+
+ CARD NUMBER   12
+
+
+
+      B A S I C   D A T A   F O R   T H E   R I G I D   B O D Y
+      ---------------------------------------------------------
+
+
+           IDICATOR KIND OF RIGID BODY ..................... KT3D =    0
+                EQ.0; 2D RIGID BODY
+                EQ.1; 3D RIGID BODY
+
+
+           NUMBER CHAINS OF RIGID BODY IN STRUCTURE ........ NLNC =    1
+                GE.1; 
+
+
+           MAXIMUM NUMBER RIGID BODY IN CHAIN ............  MXVEZ =    4
+                GE.1; 
+
+
+           MAXIMUM NUMBER OF BRANCH IN A NODE ............  MXRAC =    0
+                GE.0; 
+
+
+
+
+
+
+ CARD NUMBER   15
+
+
+
+           INDICATORS FOR GLOBAL CONSTRAINTS OF TRANSLATIONS AND ROTATIONS
+                EQ.0; FREE
+                EQ.1; RESTRAINED
+                      GLOBAL TRANSLATION IN X DIRECTION  IOPGL(1) =    0
+                      GLOBAL TRANSLATION IN Y DIRECTION  IOPGL(2) =    0
+                      GLOBAL TRANSLATION IN Z DIRECTION  IOPGL(3) =    1
+                      GLOBAL ROTATION AROUND X/V1 AXIS . IOPGL(4) =    1
+                      GLOBAL ROTATION AROUND Y/V2 AXIS . IOPGL(5) =    1
+                      GLOBAL ROTATION AROUND Z/VN AXIS . IOPGL(6) =    0
+
+
+           TYPE OF ANALYSIS ................................ NDIN =    1
+                EQ.0; STATICS
+                EQ.1; DYNAMICS
+
+
+           INDICATOR FOR EIGENVALUE COMPUTATIONS .......... ISOPS =    0
+                EQ.0; NO COMPUTATIONS
+                EQ.1; YES
+
+
+           INDICATOR FOR NUMERATION OF NODES AND ELEMENTS . ICVEL =    0
+                EQ.0; INCREASING
+                EQ.1; FREE
+
+
+           INDICATORS FOR GLOBAL CONSTRAINTS OF NODAL STRESSES
+                EQ.0; NO CONSTRAINTS
+                EQ.1; CONSTRAINT EXISTS
+                      NORMAL STRESS IN X DIRECTION ..... IOPGS(1) =    0
+                      NORMAL STRESS IN Y DIRECTION ..... IOPGS(2) =    0
+                      NORMAL STRESS IN Z DIRECTION ..... IOPGS(3) =    0
+                      SHEAR STRESS IN XY PLANE ......... IOPGS(4) =    0
+                      SHEAR STRESS IN YZ PLANE ......... IOPGS(5) =    0
+                      SHEAR STRESS IN ZX PLANE ......... IOPGS(6) =    0
+
+
+
+
+
+
+ CARD NUMBER   18
+
+
+
+      D A T A   F O R   P O S T - P R O C E S S I N G
+      -----------------------------------------------
+
+
+           KIND OF PRINTOUT OF THE INPUT DATA ............. NULAZ =    1
+                LT.0; NO  PRINTOUT
+                EQ.0; NULAZ = 1
+                EQ.1; CARD IMAGE, INPUT DATA READ AND GENERATED ARE PRINTED
+                EQ.2; CARD IMAGE PRINTED
+                EQ.3; INPUT DATA READ AND GENERATED ARE PRINTED
+
+
+           NUMBER OF BLOCKS FOR RESULTS PRINTOUT .......... NBLPR =    0
+                EQ.0; RESULTS ARE PRINTED IN ALL TIME STEPS
+                LT.0; NO PRINTOUT OF RESULTS
+
+
+           NUMBER BLOCKS FOR PLOTTING OF RESULTS .......... NBLGR =    0
+                EQ.0; RESULTS ARE PLOTTED IN ALL TIME STEPS
+                LT.0; NO PLOTTING OF RESULTS
+
+
+           INDICATOR FOR PRINTING OUTPUT IN SEPARATE FILE . ISTKO =    0
+                EQ.0; ALL STEPS PRINTED IN ONE FILE
+                EQ.1; RESULTS PRINTED SEPARATELY
+
+
+
+           NUMBER OF NODES FOR RESULTS PRINTOUT ........... NCVPR =    0
+                EQ.0; PRINTING AT ALL NODES
+
+
+           INDICATOR FOR PLOTTING TEMPERATURES ............ ISTEM =    0
+                EQ.-1; NO PLOTTING
+
+
+           INDICATOR FOR PLOTTING NODAL NORMAL VECTORS .... ISTVN =    0
+                EQ.-1; NO PLOTTING
+
+
+           INDICATOR FOR PLOTTING NODAL FORCES  ........... ISTSI =    0
+                EQ.-1; NO PLOTTING
+
+
+           INDICATOR FOR PRINTING STRAINS ................. ISTDE =    0
+                EQ.-1; NO PRINTING
+
+
+           INDICATOR FOR PRINTING RESULTS WITHIN ELEMENT .. ISTNA =    0
+                EQ. 0; PRINTING AT INTEGRATION POINTS
+                EQ. 1; IN ELEMENT CENTER
+                EQ. 2; MAXIMUM VALUES
+
+
+
+
+
+
+ CARD NUMBER        21
+
+
+
+      D A T A    F O R    R E S T A R T 
+      ---------------------------------
+
+
+           INDICATOR FOR JOB EXECUTION  ................... IREST =    0
+                EQ.0; JOB EXECUTION
+                EQ.1; RESTART OF JOB
+                EQ.2; INPUT DATA CHECK
+
+
+           NUMBER OF EIGEN MODES USED FOR IMPERFECTION .... NMODS =    0
+                EQ.0; NO IMPERFECTION
+                GT.0; READ EIGEN VECTORS FROM I/O UNIT "ZMODES"
+
+
+           SOLVER TYPE .................................... ICCGG =    0
+                EQ. 0 ; DIRECT SOLUTION - SYMMETRIC
+                EQ.-11; MUMPS SYMMETRIC
+                EQ.-1 ; ITERATIVE ICCG SOLUTION
+                EQ. 1 ; ITERATIVE PCG SOLUTION
+                EQ. 2 ; DIRECT SOLUTION - NONSYMMETRIC
+
+
+           ICCG TOLERANCE ............................. TOLG = 1.000D-03
+
+
+           ICCG SHIFT VALUE .......................... ALFAG = 0.000D+00
+
+
+           INDICATOR FOR NUMBER OF PROCESSORS............... IPAR =    1
+
+
+           A STEP IN WHICH THE RESET DISPLACEMENT WILL BE.. KODUZ =    0
+
+
+
+
+
+
+
+ CARD NUMBER        24
+
+
+
+      D A T A   F O R   T I M E   S T E P S
+      -------------------------------------
+
+
+            SOLUTION PERIOD        NUM. OF TIME STEP          TIME STEP
+                    1                    100                 1.00000D-04
+            ------------------------------------------------------------
+            NUMBER OF TIME STEPS   NDT = 100    TOTAL TIME = 1.00000D-02
+
+
+
+
+
+
+ CARD NUMBER        27
+
+
+
+      D Y N A M I C   A N A L Y S I S
+      -------------------------------
+
+
+           MASS MATRIX CODE ............................... IMASS =    1
+                EQ.0; IMASS = 1
+                EQ.1; CONSISTENT
+                EQ.2; LUMPED (DIAGONAL)
+
+
+           DAMPING MATRIX CODE ............................ IDAMP =    0
+                EQ.0; NO DAMP MATRIX
+                EQ.1; COSISTENT
+                EQ.2; LUMPED (DIAGONAL)
+                EQ.3; RAYLEIGH
+
+
+
+
+
+
+ CARD NUMBER        30
+
+
+
+
+
+
+           TIME INTEGRATION CODE ........................... MDVI =    2
+                EQ. 0; MDVI = 2
+                EQ. 1; WILSON THETA METHOD
+                EQ. 2; NEWMARK METHOD
+                EQ. 2; NEWMARK METHOD (displacement)
+                EQ.-2; NEWMARK METHOD (acceleration)
+                EQ. 3; CENTRAL DIFFERENCE METHOD
+
+
+           FIRST INTEGRATION PARAMETER ................. PIP = 5.000D-01
+                EQ.0;
+                      MDVI=1 ----- TETA=1.4
+                      MDVI=2 ---- DELTA=0.5
+
+
+           SECOND INTEGRATION PARAMETER ................ DIP = 2.500D-01
+                EQ.0;
+                      MDVI=1 ----- NOT USED
+                      MDVI=2 ---- ALFA=.25*(DELTA+.5)**2
+           RAYLEIGH COEFFICIENT ALPHA ................ ALFAM = 0.000D+00
+           RAYLEIGH COEFFICIENT BETA ................. BETAK = 0.000D+00
+           DAMPING COEFFICIENT ....................... DAMPC = 0.000D+00
+
+
+
+
+
+
+ CARD NUMBER        33
+
+
+
+      D A T A    F O R    E Q U I L I B R I U M    I T E R A T I O N S
+      ----------------------------------------------------------------
+
+
+           ITERATION METHOD EMPLOYED ...................... METOD =    1
+                LT. 0; ITERATION WITH ELASTIC TANGENT MATRIX
+                EQ. 0; METOD = 1
+                EQ. 1; MODIFIED NEWTON
+                EQ. 2; MODIFIED NEWTON + AEITKEN ACCELERATION
+                EQ. 3; FULL NEWTON
+                EQ. 4; FULL NEWTON + LINE SEARCH
+                EQ. 5; BFGS
+
+                       AUTOMATIC LOADING - CONSTANT ARC LENGTH
+                EQ.61;                     COMBINED WITH (1)
+                EQ.63;                     COMBINED WITH (3)
+
+                       AUTOMATIC LOADING - DISPLACEMENT CONTROL
+                EQ.71;                     COMBINED WITH (1)
+                EQ.73;                     COMBINED WITH (3)
+
+
+           MAXIMUM NUMBER OF ITERATIONS IN A STEP ......... MAXIT =   10
+                EQ.0; MAXIT = 10
+
+
+           CONVERGENCE CRITERION  - ENERGY ................ KONVE =    0
+                EQ.0; NOT USED
+                EQ.1; USED
+
+
+           CONVERGENCE CRITERION  - FORCE ................. KONVS =    0
+                EQ.0; NOT USED
+                EQ.1; USED
+
+
+           CONVERGENCE CRITERION  - MOMENT ................ KONVM =    0
+                EQ.0; NOT USED
+                EQ.1; USED
+
+
+           TOLERANCE FOR UNBALANCED ENERGY ............ TOLE = 1.000D-02
+                EQ.0; TOLE = 0.01
+
+
+           TOLERANCE FOR UNBALANCED FORCE ............. TOLS = 1.000D-02
+
+
+           TOLERANCE FOR UNBALANCED MOMENT ............ TOLM = 1.000D-02
+
+
+           ABSOLUTE TOLERANCE FOR ENERGY .............. TOLA = 1.000D-10
+                EQ.0; TOLA = 1.D-10
+
+
+           NUMBER DISCRETE EVENTS ......................... NBRCR =    0
+                CONCRETE - NUMBER OF CRACKS PER ITERATION IN ELEMENT GROUP
+                CONTACT - NUMBER OF CHANGED CONTACT CONDITIONS
+
+
+
+
+
+
+ I N P U T   N O D A L   D A T A
+ -------------------------------
+
+
+  NODE COOR    CONSTRAINTS        C  O  O  R  D  I  N  A  T  E S   STEP SKEW
+  NUMB SYST NX NY NZ WX WY WZ        X           Y           Z     GENE SYST
+     1       1  1  1  0  0  1      0.000000    0.000000    0.000000    0    0
+     2       0  0  1  0  0  1    100.000000    0.000000    0.000000    0    0
+     3       0  0  1  0  0  1    200.000000    0.000000    0.000000    0    0
+     4       1  1  1  0  0  1    300.000000    0.000000    0.000000    0    0
+     5       0  0  1  0  0  1      0.000000  100.000000    0.000000    0    0
+     6       0  0  1  0  0  1    100.000000  100.000000    0.000000    0    0
+     7       0  0  1  0  0  1    200.000000  100.000000    0.000000    0    0
+     8       0  0  1  0  0  1    300.000000  100.000000    0.000000    0    0
+     9       0  0  1  0  0  1      0.000000  200.000000    0.000000    0    0
+    10       0  0  1  0  0  1    100.000000  200.000000    0.000000    0    0
+    11       0  0  1  0  0  1    200.000000  200.000000    0.000000    0    0
+    12       0  0  1  0  0  1    300.000000  200.000000    0.000000    0    0
+    13       0  0  1  0  0  1      0.000000  300.000000    0.000000    0    0
+    14       0  0  1  0  0  1    100.000000  300.000000    0.000000    0    0
+    15       0  0  1  0  0  1    200.000000  300.000000    0.000000    0    0
+    16       0  0  1  0  0  1    300.000000  300.000000    0.000000    0    0
+    17       0  0  1  0  0  0    150.000000  150.000000    0.000000    0    0
+
+
+
+       C H A I N................................................L =    1
+           NUMBER OF RIGID BODIS IN CHAIN..................NKTLNC =    1
+           NR. OF THE RIGID BODY THAT CHAIN IS CONNECT. TO.NLNCVZ =    0
+           NR. OF COMMON RIGID BODIES FOR CONNECTED CHAINS..NBVEZ =    0
+
+           RIGID BODY..........................................II =    1
+           MAIN NODE OF THE RIGID BODY.......................NCGL =   17
+           NUMBER OF BOUNDARY NODES OF THE RIGID BODY........NVEZ =    4
+
+           MASS OF THE RIGID BODY........................XMASA =    0.7850D-05
+           MOMENTUM OF INERTIA FOR Z-AXIS.................XMI3 =    0.1300D-01
+           B O U N D A R Y    N O D E S
+               6    7   11   10
+
+
+
+1
+ CARD FROM NUMBER        36 TO       64
+
+
+
+ G E N E R A T E D   N O D A L   D A T A
+ ---------------------------------------
+
+
+  NODE  E Q U A T I O N  N U M B E R   C  O  O  R  D  I  N  A  T  E  S   SKEW
+  NUMB                                    X           Y           Z      SYST
+     1    0    0    0    0    0    0    0.000000    0.000000    0.000000    0
+     2    1    2    0    0    0    0  100.000000    0.000000    0.000000    0
+     3    3    4    0    0    0    0  200.000000    0.000000    0.000000    0
+     4    0    0    0    0    0    0  300.000000    0.000000    0.000000    0
+     5    5    6    0    0    0    0    0.000000  100.000000    0.000000    0
+     6   -1   -1    0    0    0    0  100.000000  100.000000    0.000000    0
+     7   -1   -1    0    0    0    0  200.000000  100.000000    0.000000    0
+     8    7    8    0    0    0    0  300.000000  100.000000    0.000000    0
+     9    9   10    0    0    0    0    0.000000  200.000000    0.000000    0
+    10   -1   -1    0    0    0    0  100.000000  200.000000    0.000000    0
+    11   -1   -1    0    0    0    0  200.000000  200.000000    0.000000    0
+    12   11   12    0    0    0    0  300.000000  200.000000    0.000000    0
+    13   13   14    0    0    0    0    0.000000  300.000000    0.000000    0
+    14   15   16    0    0    0    0  100.000000  300.000000    0.000000    0
+    15   17   18    0    0    0    0  200.000000  300.000000    0.000000    0
+    16   19   20    0    0    0    0  300.000000  300.000000    0.000000    0
+    17   21   22    0    0    0   23  150.000000  150.000000    0.000000    0
+
+
+
+1
+ CARD NUMBER        67
+
+
+
+      D A T A    A B O U T    I N I T I A L    C O N D I T IO N
+      ----------------------------------------------------------
+
+
+           NUMBER OF NODES WITH NON-ZERO DISPLACEMENTS ..... IPUU =    0
+                EQ.0; ALL INITIAL DISPLACEMENTS EQUAL TO ZERO
+
+
+           NUMBER OF NODES WITH NON-ZERO VELOCITIES ........ IPUV =    0
+                EQ.0; ALL INITIAL VELOCITIES ARE EQUAL TO ZERO
+
+
+           NUMBER OF NODES WITH NON-ZERO ACCELERATIONS ..... IPUA =    0
+                EQ.0; ALL INITIAL ACCELERATIONS ARE EQUAL TO ZERO
+
+
+           PRINT DISPLACEMENT CODE ......................... ISUU =    0
+                LT.0; DISPLACEMENTS ARE PRINTED (PROGRAM KRSTAMP)
+                EQ.0; DISPLACEMENTS ARE PRINTED
+                GT.0; DISPLACEMENT ARE NOT PRINTED
+
+
+           PRINT VELOCITIES CODE ........................... ISUV =    0
+                LT.0; VELOCITIES ARE PRINTED (PROGRAM KRSTAMP)
+                EQ.0; VELOCITIES ARE PRINTED
+                GT.0; VELOCITIES ARE NOT PRINTED
+
+
+           PRINT ACCELERATIONS CODE ........................ ISUA =    0
+                LT.0; ACCELERATIONS ARE PRINTED (PROGRAM KRSTAMP)
+                EQ.0; ACCELERATIONS ARE PRINTED
+                GT.0; ACCELERATIONS ARE NOT PRINTED
+
+
+
+1
+ CARD NUMBER        70
+
+
+
+      D A T A   F O R   M A T E R I A L   M O D E L S
+      -----------------------------------------------
+
+
+           MODEL   NUMBER OF MATERIALS   MAX NUMBER OF POINTS ON CURVE
+             1            1                       1
+
+
+
+
+
+
+      D  A  T  A     F  O  R     M  A  T  E  R  I  A  L  S
+      ----------------------------------------------------
+
+
+
+
+
+
+ CARD FROM NUMBER        73 TO       80
+
+
+
+      MATERIAL MODEL NUMBER =     1  (LINEAR ELASTIC ISOTROPIC)
+
+
+           MATERIAL NUMBER =    1
+
+
+                Y O U N G S    M O D U L U S ........... E = 2.10000D+04
+
+                P O I S S O N S    R A T I O ........... V = 3.00000D-01
+
+                D E N S I T Y ....................... GUST = 7.85000D-10
+
+
+
+1
+      I N P U T    D A T A    F O R    E L E M E N T  G R O U P S
+      -------------------------------------------------------------
+
+
+
+
+
+
+ CARD NUMBER        83
+
+
+
+           ELEMENT TYPE FOR GROUP      1 .................. NETIP =    2
+                EQ.1 ; TRUSS                            (2    NODES)
+                EQ.11; ELASTIC SUPPORT                  (1    NODES)
+                EQ.12; GAP                              (2    NODES)
+                EQ.20; ELEMENT FREE GALERKIN 2/D                    
+                EQ.2 ; ISOPARAMETRIC 2/D                (4-9  NODES)
+                EQ.21; ISOPARAMETRIC TRIANGULAR 2/D     (3-6  NODES)
+                EQ.3 ; ISOPARAMETRIC 3/D                (8-21 NODES)
+                EQ.31; ISOPARAMETRIC PRISMATIC          (6-15 NODES)
+                EQ.32; ISOPARAMETRIC PYRAMIDAL          (5-13 NODES)
+                EQ.33; ISOPARAMETRIC TETRAHEDRONAL      (4-10 NODES)
+                EQ.5 ; TRIANGULAR PLATE - D K T         (3    NODES)
+                EQ.6 ; THIN-WALLED BEAM                 (2    NODES)
+                EQ.7 ; AXISYMMETRIC SHELL               (2-4  NODES)
+                EQ.8 ; ISOPARAMETRIC SHELL              (4-9  NODES)
+                EQ.81; ISOPARAMETRIC TRIANGULAR SHELL   (3-6  NODES)
+                EQ.82; SHELL - A C S PINSKY & JANG      (9    NODES)
+                EQ.83; SHELL - GELIN & BOISSE           (3    NODES)
+                EQ.84; SHELL - BATHE & DVORKIN          (4    NODES)
+                EQ.85; PLATE - SELECTIVE INTEGRATION    (4-9  NODES)
+                EQ.9 ; BEAM SUPERELEMENT                (2-3  NODES)
+                EQ.92; CONTACT 2/D                      (2    NODES)
+                EQ.93; CONTACT 3/D                      (4    NODES)
+
+
+           NUMBER OF ELEMENTS IN THE GROUP      1 ......... NE =       8
+                GT.0;
+
+
+           INDICATOR FOR TYPE OF ANALYSIS FOR GROUP     1 . IATYP =    0
+                EQ. 0; LINEAR ANALYSIS
+                EQ. 1; MATERIALLY NONLINEAR ANALYSIS
+                EQ. 2; TOTAL LAGRANGIAN
+                EQ. 3; UPDATED LAGRANGIAN
+                EQ.-4; LARGE STRAIN - GREEN LAGRANGE
+                EQ. 4; LARGE STRAIN - ROTATED GREEN LAGRANGE
+                EQ.-5; LARGE STRAIN - LOGARITHMIC STRAIN
+                EQ. 5; LARGE STRAIN - ROTATED LOGARITHMIC STRAIN
+
+
+           NUMBER OF MATERIAL MODELS FOR GROUP      1 ....  NMODM =    1
+                EQ.0; NMODM=1
+                EQ.1; ELASTIC ISOTROPIC
+                EQ.2; ELASTIC ANISOTROPIC
+                EQ.3; THERMO-ELASTIC ISOTROPIC
+                EQ.4; THERMO-ELASTIC ORTHOTROPIC
+                EQ.5; VON MISES ELASTIC-PLASTIC WITH ISOTROPIC HARDENING
+                EQ.6; VON MISES ELASTIC-PLASTIC WITH MIXED HARDENING
+                EQ.7; SOIL PLASTICITY - GENERAL CAP
+                EQ.8; SOIL ANISOTROPIC PLASTICITY (CAM-CLAY)
+                EQ.9; SOIL ISOTROPIC PLASTICITY (CAM-CLAY)
+               EQ.10; ELASTIC-PLASTIC ORTHOTROPIC
+               EQ.11; GAP - STRESS
+               EQ.12; GAP - FORCE
+               EQ.13; GENERAL ANISOTROPIC ELASTIC-PLASTIC
+               EQ.14; VON MISES THERMO-ELASTIC-PLASTIC WITH MIXED HARDENING
+               EQ.15; THERMO-ELASTIC WITH CREEP
+               EQ.16; VON MISES THERMO-ELASTIC-PLASTIC (WITH MIXED HARDENING)
+                      AND CREEP
+               EQ.17; VON MISES THERMO-ELASTIC-PLASTIC (WITH MIXED HARDENING)
+                      (ORTHOTROPIC)
+               EQ.18; THERMO-ELASTIC WITH CREEP (ORTHOTROPIC)
+               EQ.19; VON MISES THERMO-ELASTIC-PLASTIC (WITH MIXED HARDENING)
+                      AND CREEP (ORTHOTROPIC)
+               EQ.20; VON MISES VISCO-PLASTIC ISOTROPIC WITH MIXED HARDENING
+               EQ.21; VON MISES VISCO-PLASTIC ORTHOTROPIC WITH MIXED HARDENING
+               EQ.22; CAM-CLAY VISCOPLASTICITY
+               EQ.23; SOIL CAP MODEL - VISCOPLASTICITY
+               EQ.24; LINEAR VISCOELASTIC
+               EQ.25; ROCKS-CST / JOINT
+               EQ.27; CONCRETE
+               EQ.28; RUBBER
+               EQ.29; ANAND`S PLASTIC ISOTROPIC
+               EQ.30; ELASTIC MATERIAL WITH INTERNAL FRICTION
+               EQ.31; HILLS MUSCLE MODEL
+               EQ.32; BIOLOGICAL STRESS-STRETCH MODEL FOR PASSIVE STATE
+               EQ.33; BIOLOGICAL STRESS-STRETCH MODEL FOR PASSIVE STATE
+                      WITH CREEP
+               EQ.34; BIOLOGICAL STRESS-STRETCH MODEL FOR ACTIVE STATE
+               EQ.40; GURSON
+               EQ.56; CONCRETE DAMAGE
+               EQ.61; ISOTROPIC DAMAGE MODEL (OLIVER)
+
+
+
+           ELEMENT BIRTH OPTION INDICATOR ................ INDBTH =    0
+                EQ.0; OPTION NOT USED
+                EQ.1; OPTION USED
+
+
+           ELEMENT DEATH OPTION INDICATOR ................ INDDTH =    0
+                EQ.0; OPTION NOT USED
+                EQ.1; OPTION USED
+
+
+           COORDINATE SYSTEM INDICATOR FOR MATRIX B ...... INDKOV =    0
+                EQ.-1; COVARIANT SYSTEM
+                EQ.-2; COVARIANT SYSTEM, WITHOUT BNL
+                EQ. 0; NOT USED
+                EQ. 1; CARTESIAN SYSTEM
+                EQ. 2; CARTESIAN SYSTEM, WITHOUT BNL
+
+           INDICATOR FOR INITIAL STRESS ................. ISTRESS =    0
+                EQ.-1; CALCULATION OF INITIAL STRESS AND DISPLACEMENT
+
+                EQ. 0; OPTION NOT USED
+                EQ. 1; INITIAL STRESS USED (COPY CONFIGURATION FROM LST)
+
+           CORECTION COEFFICIENT FOR SHEAR MODULUS GYZ-COEF1 = 8.333D-01
+                EQ.0.; COEF1=5./6
+
+           CORECTION COEFFICIENT FOR SHEAR MODULUS GZX-COEF2 = 8.333D-01
+                EQ.0.; COEF2=5./6
+
+           CORECTION COEFFICIENT FOR SHEAR MODULUS GXY-COEF3 = 1.000D+00
+                EQ.0.; COEF3=1. 
+
+
+
+
+
+
+ CARD NUMBER        87
+
+
+
+           2/D ELEMENT TYPE IN THE CURRENT GROUP .......... IETYP =    2
+                EQ.0; PLANE STRESS
+                EQ.1; AXISYMMETRIC
+                EQ.2; PLANE STRAIN
+                EQ.3; PLANE STRESS IN SPACE
+                EQ.4; SHEAR PANEL IN SPACE
+
+
+           NUMBER OF GAUSS POINTS IN R-DIRECTION ......... NGAUSX =    2
+                EQ.0; NGAUSX = 2
+
+
+           NUMBER OF GAUSS POINTS IN S-DIRECTION ......... NGAUSY =    2
+                EQ.0; NGAUSY = 2
+
+
+           ANGLE OF FIBER TO REFERENT DIRECTION ....... BETA = 0.000D+00
+
+
+           COORDINATES FOR PROJECTING DIRECTION ....... CPPX = 0.000D+00
+                                                ....... CPPY = 0.000D+00
+                                                ....... CPPZ = 0.000D+00
+
+
+           METHOD OF INCOMPATIBLE MODES ................... IALFA =    1
+                EQ.-1; NOT USED
+                EQ. 0; IALFA=1
+                EQ. 1; 4 PARAMETERS - TAYLOR
+                EQ. 2; 5 PARAMETERS
+
+
+
+ READING DATA ABOUT TO ISOPARAMETRIC 2/D ELEMENTS FOR GROUP     1
+ ----------------------------------------------------------------
+
+
+ ELEME  NODE1 NODE2 NODE3 NODE4      MATER COORD STRES STRES    THICK    STEP
+ NUMBE NODE5 NODE6 NODE7 NODE8 NODE9 NUMBE PRINT PRINT  NODE   ELEMENT  GENER
+     1      1     2     6     5          1     0     0     0  1.000D+00     0
+           0     0     0     0     0
+     2      2     3     7     6          1     0     0     0  1.000D+00     0
+           0     0     0     0     0
+     3      3     4     8     7          1     0     0     0  1.000D+00     0
+           0     0     0     0     0
+     4      5     6    10     9          1     0     0     0  1.000D+00     0
+           0     0     0     0     0
+     5      7     8    12    11          1     0     0     0  1.000D+00     0
+           0     0     0     0     0
+     6      9    10    14    13          1     0     0     0  1.000D+00     0
+           0     0     0     0     0
+     7     10    11    15    14          1     0     0     0  1.000D+00     0
+           0     0     0     0     0
+     8     11    12    16    15          1     0     0     0  1.000D+00     0
+           0     0     0     0     0
+
+
+
+
+
+
+ CARD FROM NUMBER        90 TO      107
+
+
+
+ GENERATED DATA ABOUT TO ISOPARAMETRIC 2/D ELEMENTS FOR GROUP     1
+ ------------------------------------------------------------------
+
+
+ ELEME  NODE1 NODE2 NODE3 NODE4      MATER COORD STRES STRES    THICK 
+ NUMBE NODE5 NODE6 NODE7 NODE8 NODE9 NUMBE PRINT PRINT  NODE   ELEMENT
+     1      1     2     6     5          1     0     0     0  1.000D+00
+     2      2     3     7     6          1     0     0     0  1.000D+00
+     3      3     4     8     7          1     0     0     0  1.000D+00
+     4      5     6    10     9          1     0     0     0  1.000D+00
+     5      7     8    12    11          1     0     0     0  1.000D+00
+     6      9    10    14    13          1     0     0     0  1.000D+00
+     7     10    11    15    14          1     0     0     0  1.000D+00
+     8     11    12    16    15          1     0     0     0  1.000D+00
+
+
+
+           GROUP NUMBER    1  SPACE IN WORKING VECTOR ... NPROS =     1928
+
+
+
+
+1
+ CARD NUMBER       110
+
+
+
+      D A T A    F O R    T I M E    F U N C T I O N S
+      ------------------------------------------------
+
+
+           NUMBER OF DIFFERENT TIME FUNCTIONS ............ NTABFT =    1
+                EQ.0; THERE ARE NO TIME FUNCTIONS
+
+
+           MAX NO OF POINTS FOR DEFINITION OF TIME FUNCT . MAXTFT =    2
+                EQ.0; THERE ARE NO TIME FUNCTIONS
+                EQ.1; TIME FUNCTIONS ARE CONSTANT
+                GT.1; TIME FUNCTIONS ARE VARIABLE
+
+
+
+
+
+
+      T I M E    F U N C T I O N S
+      ----------------------------
+
+
+
+
+
+
+ CARD FROM NUMBER       114 TO      118
+
+
+
+      FUNCTION SEQUENCE NUMBER ....................... =    1
+      NUMBER OF POINTS FOR TIME FUNCTION DEFINITION .. =    2
+
+
+            ARGUMENT      FUNCTION
+          0.00000D+00   1.00000D+00
+          1.00000D+01   1.00000D+00
+
+
+
+1
+
+
+      G E N E R A L    D A T A    A B O U T    L O A D S
+      --------------------------------------------------
+
+
+
+
+
+
+ CARD NUMBER       121
+
+
+
+           NUMBER OF CONCENTRATED FORCES AND MOMENTS ........ NCF =        1
+                EQ.0; NO CONCENTARTED FORCES
+
+
+           NUMBER OF LINES UNDER PRESSURE .................. NPP2 =        0
+                EQ.0; NO LINES UNDER PRESSURE
+
+
+           NUMBER OF SURFACES UNDER PRESSURE ............... NPP3 =        0
+                EQ.0; NO SURFACES UNDER PRESSURE
+
+
+           NUMBER OF THIN-WALLED BEAM NODES UNDER PRESSURE . NPGR =        0
+                EQ.0; NO THIN-WALLED BEAMS UNDER PRESSURE
+
+
+           NUMBER OF AXISYMMETRIC SHELLS UNDER PRESSURE .... NPLJ =        0
+                EQ.0; NO AXISYMMETRIC SHELLS UNDER PRESSURE
+
+
+           NUMBER OF NODES WITH TEMPERATURE ............... NTEMP =        0
+                LT.0; TEMPERATURES ARE READ FROM UNIT 56
+                EQ.0; TEMPERATURES ARE NOT USED IN ANALYSIS
+
+
+           NUMBER OF PRESCRIBED DISPLACEMENTS ............. NZADP =        0
+                EQ.0; NO PRESCRIBED DISPLACEMENTS
+
+
+           NUMBER OF BODY FORCES .......................... INDZS =        0
+                EQ.0; NO BODY FORCES
+
+
+           NUMBER OF STEPS FOR FILTRATION FORCES ......... ICERNE =        0
+                EQ.0; NO FILTRATION FORCES
+
+
+
+1
+      C O N C E N T R A T E D    L O A D S    D A T A
+      -----------------------------------------------
+
+
+
+
+
+
+      I N P U T      D A T A
+
+
+      NODE NUMBER   DOF   FUNCTION NU.   PROP. FACTOR    STEP GEN.    SHIFT
+        16           1           1       -1.00000D+03       0      0.00000D+00
+
+
+
+
+
+
+ CARD NUMBER       124
+
+
+
+      G E N E R A T E D     D A T A
+
+
+      EQUATIONS NUMBER   TIME FUNCTION NUMBER   MULTIPL. FACTOR       SHIFT
+            19                     1             -1.00000D+03      0.00000D+00
+
+
+
+1
+
+
+      DATA ABOUT DIMENSIONS OF THE SYSTEM MATRIX AND THE WORKING ARRAY A
+      ------------------------------------------------------------------
+
+
+
+           NUMBER OF EQUATIONS ......................... JEDN =        23
+
+           NUMBER OF ELEMENTS IN THE SYSTEM MATRIX ...... NWK =       180
+
+           MAXIMUM HEIGHT COLUMN IN THE SYSTEM MATRIX ... MHC =        23
+
+           REQUIRED DIMENSION IN THE WORKING ARRAY ..... LMAX =      3666
+
+           MAXIMUM TOTAL STORAGE AVAILABLE ............. MTOT = 400000000
+
+
+
+ WK,NS,LRTD          35        1017
+K07W
+ 2.20192D+04 2.20192D+04 0.00000D+00 2.20192D+04-1.00962D+03-6.97115D+03
+ 2.20192D+04 0.00000D+00 3.12500D+03 1.00962D+03 2.20192D+04 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.16346D+03 2.20192D+04 9.09495D-13 0.00000D+00
+ 0.00000D+00-7.16346D+03 5.04808D+03 2.20192D+04 0.00000D+00 0.00000D+00
+-5.04808D+03-7.16346D+03 2.20192D+04 0.00000D+00 0.00000D+00 0.00000D+00
+-7.16346D+03-5.04808D+03 2.20192D+04 0.00000D+00 0.00000D+00 1.00962D+03
+ 3.12500D+03 2.20192D+04 9.09495D-13 0.00000D+00 0.00000D+00-6.97115D+03
+-1.00962D+03 2.20192D+04 0.00000D+00 0.00000D+00-1.00962D+03 3.12500D+03
+ 2.20192D+04 1.81899D-12 0.00000D+00 0.00000D+00-6.97115D+03 1.00962D+03
+ 1.10096D+04 0.00000D+00 0.00000D+00 1.00962D+03 3.12500D+03 1.10096D+04
+-5.04808D+03 0.00000D+00 0.00000D+00-6.97115D+03-1.00962D+03 2.20192D+04
+ 1.00962D+03-6.97115D+03 0.00000D+00 0.00000D+00-5.04808D+03-7.16346D+03
+ 2.20192D+04-9.09495D-13 3.12500D+03-1.00962D+03 0.00000D+00 0.00000D+00
+-7.16346D+03-5.04808D+03 2.20192D+04 1.00962D+03-6.97115D+03 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.16346D+03 2.20192D+04-9.09495D-13 3.12500D+03
+-1.00962D+03 0.00000D+00 0.00000D+00-7.16346D+03 5.04808D+03 1.10096D+04
+ 1.00962D+03-6.97115D+03 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+-1.00962D+03 3.12500D+03 1.10096D+04 5.04808D+03 3.12500D+03-1.00962D+03
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00-6.97115D+03 1.00962D+03
+ 1.16731D+05-5.04808D+03-7.16346D+03-5.04808D+03-9.13462D+02 5.04808D+03
+-9.13462D+02 5.04808D+03-7.16346D+03-5.04808D+03-2.11058D+04 5.04808D+03
+-2.11058D+04 5.04808D+03-2.11058D+04-5.04808D+03-2.11058D+04 5.04808D+03
+-9.13462D+02-5.04808D+03-9.13462D+02 1.16731D+05 6.36646D-12-7.16346D+03
+-5.04808D+03-2.11058D+04-5.04808D+03-2.11058D+04 5.04808D+03-7.16346D+03
+ 5.04808D+03-9.13462D+02-5.04808D+03-9.13462D+02 5.04808D+03-9.13462D+02
+ 5.04808D+03-9.13462D+02-5.04808D+03-2.11058D+04 5.04808D+03-2.11058D+04
+-5.04808D+03 5.19231D+08 1.16415D-10-1.45519D-09-1.05769D+05 1.05769D+05
+-8.65385D+04 2.98077D+05 8.65385D+04 2.98077D+05 1.05769D+05 1.05769D+05
+-2.98077D+05 8.65385D+04 2.98077D+05 8.65385D+04-2.98077D+05-8.65385D+04
+ 2.98077D+05-8.65385D+04-8.65385D+04-2.98077D+05 8.65385D+04-2.98077D+05
+ iskdsk           0
+ WK,NS,LRTD          54        1377
+MASW
+ 1.74444D-06 1.74444D-06 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 4.36111D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 8.72222D-07 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 8.72222D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 4.36111D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07 0.00000D+00 8.72222D-07
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 4.36111D-07 8.72222D-07 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 2.18056D-05 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 2.18056D-05 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 6.53333D-02 6.77626D-21-6.77626D-21 1.09028D-05-1.09028D-05
+ 3.27083D-05-5.45139D-05-3.27083D-05-5.45139D-05-1.09028D-05-1.09028D-05
+ 5.45139D-05-3.27083D-05-5.45139D-05-3.27083D-05 5.45139D-05 3.27083D-05
+-5.45139D-05 3.27083D-05 3.27083D-05 5.45139D-05-3.27083D-05 5.45139D-05
+
+
+
+ D Y N A M I C S    C O E F F I C I E N T S
+
+      A0           A1           A2           A3           A4           A5
+ 4.000000E+08 2.000000E+04 4.000000E+04 1.000000E+00 1.000000E+00 0.000000E+00
+
+      A6           A7           A8           A9           A10
+ 4.000000E+08-4.000000E+04-1.000000E+00 5.000000E-05 5.000000E-05
+SKul
+ 2.20192D+04 2.20192D+04 0.00000D+00 2.20192D+04-1.00962D+03-6.97115D+03
+ 2.20192D+04 0.00000D+00 3.12500D+03 1.00962D+03 2.20192D+04 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.16346D+03 2.20192D+04 9.09495D-13 0.00000D+00
+ 0.00000D+00-7.16346D+03 5.04808D+03 2.20192D+04 0.00000D+00 0.00000D+00
+-5.04808D+03-7.16346D+03 2.20192D+04 0.00000D+00 0.00000D+00 0.00000D+00
+-7.16346D+03-5.04808D+03 2.20192D+04 0.00000D+00 0.00000D+00 1.00962D+03
+ 3.12500D+03 2.20192D+04 9.09495D-13 0.00000D+00 0.00000D+00-6.97115D+03
+-1.00962D+03 2.20192D+04 0.00000D+00 0.00000D+00-1.00962D+03 3.12500D+03
+ 2.20192D+04 1.81899D-12 0.00000D+00 0.00000D+00-6.97115D+03 1.00962D+03
+ 1.10096D+04 0.00000D+00 0.00000D+00 1.00962D+03 3.12500D+03 1.10096D+04
+-5.04808D+03 0.00000D+00 0.00000D+00-6.97115D+03-1.00962D+03 2.20192D+04
+ 1.00962D+03-6.97115D+03 0.00000D+00 0.00000D+00-5.04808D+03-7.16346D+03
+ 2.20192D+04-9.09495D-13 3.12500D+03-1.00962D+03 0.00000D+00 0.00000D+00
+-7.16346D+03-5.04808D+03 2.20192D+04 1.00962D+03-6.97115D+03 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.16346D+03 2.20192D+04-9.09495D-13 3.12500D+03
+-1.00962D+03 0.00000D+00 0.00000D+00-7.16346D+03 5.04808D+03 1.10096D+04
+ 1.00962D+03-6.97115D+03 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+-1.00962D+03 3.12500D+03 1.10096D+04 5.04808D+03 3.12500D+03-1.00962D+03
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00-6.97115D+03 1.00962D+03
+ 1.16731D+05-5.04808D+03-7.16346D+03-5.04808D+03-9.13462D+02 5.04808D+03
+-9.13462D+02 5.04808D+03-7.16346D+03-5.04808D+03-2.11058D+04 5.04808D+03
+-2.11058D+04 5.04808D+03-2.11058D+04-5.04808D+03-2.11058D+04 5.04808D+03
+-9.13462D+02-5.04808D+03-9.13462D+02 1.16731D+05 6.36646D-12-7.16346D+03
+-5.04808D+03-2.11058D+04-5.04808D+03-2.11058D+04 5.04808D+03-7.16346D+03
+ 5.04808D+03-9.13462D+02-5.04808D+03-9.13462D+02 5.04808D+03-9.13462D+02
+ 5.04808D+03-9.13462D+02-5.04808D+03-2.11058D+04 5.04808D+03-2.11058D+04
+-5.04808D+03 5.19231D+08 1.16415D-10-1.45519D-09-1.05769D+05 1.05769D+05
+-8.65385D+04 2.98077D+05 8.65385D+04 2.98077D+05 1.05769D+05 1.05769D+05
+-2.98077D+05 8.65385D+04 2.98077D+05 8.65385D+04-2.98077D+05-8.65385D+04
+ 2.98077D+05-8.65385D+04-8.65385D+04-2.98077D+05 8.65385D+04-2.98077D+05
+K07U
+ 2.20192D+04 2.20192D+04 0.00000D+00 2.20192D+04-1.00962D+03-6.97115D+03
+ 2.20192D+04 0.00000D+00 3.12500D+03 1.00962D+03 2.20192D+04 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.16346D+03 2.20192D+04 9.09495D-13 0.00000D+00
+ 0.00000D+00-7.16346D+03 5.04808D+03 2.20192D+04 0.00000D+00 0.00000D+00
+-5.04808D+03-7.16346D+03 2.20192D+04 0.00000D+00 0.00000D+00 0.00000D+00
+-7.16346D+03-5.04808D+03 2.20192D+04 0.00000D+00 0.00000D+00 1.00962D+03
+ 3.12500D+03 2.20192D+04 9.09495D-13 0.00000D+00 0.00000D+00-6.97115D+03
+-1.00962D+03 2.20192D+04 0.00000D+00 0.00000D+00-1.00962D+03 3.12500D+03
+ 2.20192D+04 1.81899D-12 0.00000D+00 0.00000D+00-6.97115D+03 1.00962D+03
+ 1.10096D+04 0.00000D+00 0.00000D+00 1.00962D+03 3.12500D+03 1.10096D+04
+-5.04808D+03 0.00000D+00 0.00000D+00-6.97115D+03-1.00962D+03 2.20192D+04
+ 1.00962D+03-6.97115D+03 0.00000D+00 0.00000D+00-5.04808D+03-7.16346D+03
+ 2.20192D+04-9.09495D-13 3.12500D+03-1.00962D+03 0.00000D+00 0.00000D+00
+-7.16346D+03-5.04808D+03 2.20192D+04 1.00962D+03-6.97115D+03 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.16346D+03 2.20192D+04-9.09495D-13 3.12500D+03
+-1.00962D+03 0.00000D+00 0.00000D+00-7.16346D+03 5.04808D+03 1.10096D+04
+ 1.00962D+03-6.97115D+03 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+-1.00962D+03 3.12500D+03 1.10096D+04 5.04808D+03 3.12500D+03-1.00962D+03
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00-6.97115D+03 1.00962D+03
+ 1.16731D+05-5.04808D+03-7.16346D+03-5.04808D+03-9.13462D+02 5.04808D+03
+-9.13462D+02 5.04808D+03-7.16346D+03-5.04808D+03-2.11058D+04 5.04808D+03
+-2.11058D+04 5.04808D+03-2.11058D+04-5.04808D+03-2.11058D+04 5.04808D+03
+-9.13462D+02-5.04808D+03-9.13462D+02 1.16731D+05 6.36646D-12-7.16346D+03
+-5.04808D+03-2.11058D+04-5.04808D+03-2.11058D+04 5.04808D+03-7.16346D+03
+ 5.04808D+03-9.13462D+02-5.04808D+03-9.13462D+02 5.04808D+03-9.13462D+02
+ 5.04808D+03-9.13462D+02-5.04808D+03-2.11058D+04 5.04808D+03-2.11058D+04
+-5.04808D+03 5.19231D+08 1.16415D-10-1.45519D-09-1.05769D+05 1.05769D+05
+-8.65385D+04 2.98077D+05 8.65385D+04 2.98077D+05 1.05769D+05 1.05769D+05
+-2.98077D+05 8.65385D+04 2.98077D+05 8.65385D+04-2.98077D+05-8.65385D+04
+ 2.98077D+05-8.65385D+04-8.65385D+04-2.98077D+05 8.65385D+04-2.98077D+05
+K07R
+ 2.20192D+04 2.20192D+04 0.00000D+00 2.20192D+04-1.00962D+03-6.97115D+03
+ 2.20192D+04 0.00000D+00 3.12500D+03 1.00962D+03 2.20192D+04 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.16346D+03 2.20192D+04 9.09495D-13 0.00000D+00
+ 0.00000D+00-7.16346D+03 5.04808D+03 2.20192D+04 0.00000D+00 0.00000D+00
+-5.04808D+03-7.16346D+03 2.20192D+04 0.00000D+00 0.00000D+00 0.00000D+00
+-7.16346D+03-5.04808D+03 2.20192D+04 0.00000D+00 0.00000D+00 1.00962D+03
+ 3.12500D+03 2.20192D+04 9.09495D-13 0.00000D+00 0.00000D+00-6.97115D+03
+-1.00962D+03 2.20192D+04 0.00000D+00 0.00000D+00-1.00962D+03 3.12500D+03
+ 2.20192D+04 1.81899D-12 0.00000D+00 0.00000D+00-6.97115D+03 1.00962D+03
+ 1.10096D+04 0.00000D+00 0.00000D+00 1.00962D+03 3.12500D+03 1.10096D+04
+-5.04808D+03 0.00000D+00 0.00000D+00-6.97115D+03-1.00962D+03 2.20192D+04
+ 1.00962D+03-6.97115D+03 0.00000D+00 0.00000D+00-5.04808D+03-7.16346D+03
+ 2.20192D+04-9.09495D-13 3.12500D+03-1.00962D+03 0.00000D+00 0.00000D+00
+-7.16346D+03-5.04808D+03 2.20192D+04 1.00962D+03-6.97115D+03 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.16346D+03 2.20192D+04-9.09495D-13 3.12500D+03
+-1.00962D+03 0.00000D+00 0.00000D+00-7.16346D+03 5.04808D+03 1.10096D+04
+ 1.00962D+03-6.97115D+03 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+-1.00962D+03 3.12500D+03 1.10096D+04 5.04808D+03 3.12500D+03-1.00962D+03
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00-6.97115D+03 1.00962D+03
+ 1.16731D+05-5.04808D+03-7.16346D+03-5.04808D+03-9.13462D+02 5.04808D+03
+-9.13462D+02 5.04808D+03-7.16346D+03-5.04808D+03-2.11058D+04 5.04808D+03
+-2.11058D+04 5.04808D+03-2.11058D+04-5.04808D+03-2.11058D+04 5.04808D+03
+-9.13462D+02-5.04808D+03-9.13462D+02 1.16731D+05 6.36646D-12-7.16346D+03
+-5.04808D+03-2.11058D+04-5.04808D+03-2.11058D+04 5.04808D+03-7.16346D+03
+ 5.04808D+03-9.13462D+02-5.04808D+03-9.13462D+02 5.04808D+03-9.13462D+02
+ 5.04808D+03-9.13462D+02-5.04808D+03-2.11058D+04 5.04808D+03-2.11058D+04
+-5.04808D+03 5.19231D+08 1.16415D-10-1.45519D-09-1.05769D+05 1.05769D+05
+-8.65385D+04 2.98077D+05 8.65385D+04 2.98077D+05 1.05769D+05 1.05769D+05
+-2.98077D+05 8.65385D+04 2.98077D+05 8.65385D+04-2.98077D+05-8.65385D+04
+ 2.98077D+05-8.65385D+04-8.65385D+04-2.98077D+05 8.65385D+04-2.98077D+05
+ iskdsk,alfam,betak           0  0.000000000000000E+000  0.000000000000000E+000
+SKLS
+ 2.20192D+04 2.20192D+04 0.00000D+00 2.20192D+04-1.00962D+03-6.97115D+03
+ 2.20192D+04 0.00000D+00 3.12500D+03 1.00962D+03 2.20192D+04 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.16346D+03 2.20192D+04 9.09495D-13 0.00000D+00
+ 0.00000D+00-7.16346D+03 5.04808D+03 2.20192D+04 0.00000D+00 0.00000D+00
+-5.04808D+03-7.16346D+03 2.20192D+04 0.00000D+00 0.00000D+00 0.00000D+00
+-7.16346D+03-5.04808D+03 2.20192D+04 0.00000D+00 0.00000D+00 1.00962D+03
+ 3.12500D+03 2.20192D+04 9.09495D-13 0.00000D+00 0.00000D+00-6.97115D+03
+-1.00962D+03 2.20192D+04 0.00000D+00 0.00000D+00-1.00962D+03 3.12500D+03
+ 2.20192D+04 1.81899D-12 0.00000D+00 0.00000D+00-6.97115D+03 1.00962D+03
+ 1.10096D+04 0.00000D+00 0.00000D+00 1.00962D+03 3.12500D+03 1.10096D+04
+-5.04808D+03 0.00000D+00 0.00000D+00-6.97115D+03-1.00962D+03 2.20192D+04
+ 1.00962D+03-6.97115D+03 0.00000D+00 0.00000D+00-5.04808D+03-7.16346D+03
+ 2.20192D+04-9.09495D-13 3.12500D+03-1.00962D+03 0.00000D+00 0.00000D+00
+-7.16346D+03-5.04808D+03 2.20192D+04 1.00962D+03-6.97115D+03 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.16346D+03 2.20192D+04-9.09495D-13 3.12500D+03
+-1.00962D+03 0.00000D+00 0.00000D+00-7.16346D+03 5.04808D+03 1.10096D+04
+ 1.00962D+03-6.97115D+03 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+-1.00962D+03 3.12500D+03 1.10096D+04 5.04808D+03 3.12500D+03-1.00962D+03
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00-6.97115D+03 1.00962D+03
+ 1.16731D+05-5.04808D+03-7.16346D+03-5.04808D+03-9.13462D+02 5.04808D+03
+-9.13462D+02 5.04808D+03-7.16346D+03-5.04808D+03-2.11058D+04 5.04808D+03
+-2.11058D+04 5.04808D+03-2.11058D+04-5.04808D+03-2.11058D+04 5.04808D+03
+-9.13462D+02-5.04808D+03-9.13462D+02 1.16731D+05 6.36646D-12-7.16346D+03
+-5.04808D+03-2.11058D+04-5.04808D+03-2.11058D+04 5.04808D+03-7.16346D+03
+ 5.04808D+03-9.13462D+02-5.04808D+03-9.13462D+02 5.04808D+03-9.13462D+02
+ 5.04808D+03-9.13462D+02-5.04808D+03-2.11058D+04 5.04808D+03-2.11058D+04
+-5.04808D+03 5.19231D+08 1.16415D-10-1.45519D-09-1.05769D+05 1.05769D+05
+-8.65385D+04 2.98077D+05 8.65385D+04 2.98077D+05 1.05769D+05 1.05769D+05
+-2.98077D+05 8.65385D+04 2.98077D+05 8.65385D+04-2.98077D+05-8.65385D+04
+ 2.98077D+05-8.65385D+04-8.65385D+04-2.98077D+05 8.65385D+04-2.98077D+05
+MASA
+ 1.74444D-06 1.74444D-06 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 4.36111D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 8.72222D-07 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 8.72222D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 4.36111D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07 0.00000D+00 8.72222D-07
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 4.36111D-07 8.72222D-07 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 2.18056D-05 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 2.18056D-05 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 6.53333D-02 6.77626D-21-6.77626D-21 1.09028D-05-1.09028D-05
+ 3.27083D-05-5.45139D-05-3.27083D-05-5.45139D-05-1.09028D-05-1.09028D-05
+ 5.45139D-05-3.27083D-05-5.45139D-05-3.27083D-05 5.45139D-05 3.27083D-05
+-5.45139D-05 3.27083D-05 3.27083D-05 5.45139D-05-3.27083D-05 5.45139D-05
+ WK,NS,LRTD          58        1017
+ a0,a1   400000000.000000        20000.0000000000     
+ZBIR
+ 2.27170D+04 2.27170D+04 0.00000D+00 2.27170D+04-1.00962D+03-6.79671D+03
+ 2.27170D+04 0.00000D+00 3.29944D+03 1.00962D+03 2.27170D+04 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.07624D+03 2.27170D+04 9.09495D-13 0.00000D+00
+ 0.00000D+00-7.07624D+03 5.04808D+03 2.27170D+04 0.00000D+00 0.00000D+00
+-5.04808D+03-7.07624D+03 2.27170D+04 0.00000D+00 0.00000D+00 0.00000D+00
+-7.07624D+03-5.04808D+03 2.27170D+04 0.00000D+00 0.00000D+00 1.00962D+03
+ 3.29944D+03 2.27170D+04 9.09495D-13 0.00000D+00 0.00000D+00-6.79671D+03
+-1.00962D+03 2.27170D+04 0.00000D+00 0.00000D+00-1.00962D+03 3.29944D+03
+ 2.27170D+04 1.81899D-12 0.00000D+00 0.00000D+00-6.79671D+03 1.00962D+03
+ 1.13585D+04 0.00000D+00 0.00000D+00 1.00962D+03 3.29944D+03 1.13585D+04
+-5.04808D+03 0.00000D+00 0.00000D+00-6.79671D+03-1.00962D+03 2.27170D+04
+ 1.00962D+03-6.79671D+03 0.00000D+00 0.00000D+00-5.04808D+03-7.07624D+03
+ 2.27170D+04-9.09495D-13 3.29944D+03-1.00962D+03 0.00000D+00 0.00000D+00
+-7.07624D+03-5.04808D+03 2.27170D+04 1.00962D+03-6.79671D+03 0.00000D+00
+ 0.00000D+00 5.04808D+03-7.07624D+03 2.27170D+04-9.09495D-13 3.29944D+03
+-1.00962D+03 0.00000D+00 0.00000D+00-7.07624D+03 5.04808D+03 1.13585D+04
+ 1.00962D+03-6.79671D+03 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+-1.00962D+03 3.29944D+03 1.13585D+04 5.04808D+03 3.29944D+03-1.00962D+03
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00-6.79671D+03 1.00962D+03
+ 1.25453D+05-5.04808D+03-7.07624D+03-5.04808D+03-4.77350D+02 5.04808D+03
+-4.77350D+02 5.04808D+03-7.07624D+03-5.04808D+03-2.06697D+04 5.04808D+03
+-2.06697D+04 5.04808D+03-2.06697D+04-5.04808D+03-2.06697D+04 5.04808D+03
+-4.77350D+02-5.04808D+03-4.77350D+02 1.25453D+05 6.36646D-12-7.07624D+03
+-5.04808D+03-2.06697D+04-5.04808D+03-2.06697D+04 5.04808D+03-7.07624D+03
+ 5.04808D+03-4.77350D+02-5.04808D+03-4.77350D+02 5.04808D+03-4.77350D+02
+ 5.04808D+03-4.77350D+02-5.04808D+03-2.06697D+04 5.04808D+03-2.06697D+04
+-5.04808D+03 5.45364D+08 1.19126D-10-1.45790D-09-1.01408D+05 1.01408D+05
+-7.34551D+04 2.76271D+05 7.34551D+04 2.76271D+05 1.01408D+05 1.01408D+05
+-2.76271D+05 7.34551D+04 2.76271D+05 7.34551D+04-2.76271D+05-7.34551D+04
+ 2.76271D+05-7.34551D+04-7.34551D+04-2.76271D+05 7.34551D+04-2.76271D+05
+ WK,NS,LRTD          60        1017
+K-10
+ 2.27170D+04 2.27170D+04 0.00000D+00 2.06386D+04-4.44431D-02-2.99190D-01
+ 2.21832D+04 2.17410D-02 1.45241D-01 4.44431D-02 1.92110D+04-1.70195D-02
+-9.17110D-02 2.22216D-01-3.11495D-01 1.87386D+04 1.70101D-01 3.50450D-02
+ 5.79421D-02-3.11495D-01 2.22216D-01 1.91565D+04 3.76809D-02-3.81170D-02
+-2.20628D-01-3.42864D-01 1.86821D+04-1.72992D-01 3.39169D-02-3.02707D-02
+-3.14044D-01-2.44594D-01 2.21384D+04 5.54021D-03 5.68317D-03 2.39280D-02
+ 1.71748D-01 2.03116D+04 1.48811D-02 1.23468D-02 1.10225D-02-3.53546D-01
+-5.25540D-02 2.21384D+04-1.51179D-03-7.37183D-04-2.34898D-02 1.72236D-01
+ 2.03114D+04-1.48753D-02 3.45478D-03 1.39801D-03-3.54461D-01 5.27035D-02
+ 1.08213D+04-3.87628D-04 1.75460D-04 4.72890D-02 1.49037D-01 7.11234D+03
+-4.22951D-01 1.21494D-03-4.96728D-04-3.33882D-01-4.56047D-02 1.49236D+04
+-4.63025D-01-5.09025D-01 1.31848D-03-5.73164D-04-2.43347D-01-3.19636D-01
+ 1.84965D+04-1.96098D-01 1.07259D-01 6.82219D-03 1.52781D-03-6.46189D-04
+-3.44685D-01-2.28023D-01 1.61391D+04-1.82184D-02-4.56288D-01-1.15078D-03
+ 2.91791D-04 2.43352D-01-3.19637D-01 1.80326D+04 1.80935D-01 1.68535D-01
+-6.66681D-02 1.33445D-03-3.32637D-04-3.44691D-01 2.28024D-01 8.89541D+03
+ 5.11328D-02-3.41192D-01 2.21163D-04 2.53711D-04 3.37946D-04-8.79050D-05
+-4.72906D-02 1.49037D-01 6.29668D+03 5.48498D-01 3.07762D-02 6.00381D-02
+ 6.75540D-04 7.76598D-04 1.06211D-03-2.59295D-04-3.33887D-01 4.56048D-02
+ 3.65362D+04-1.34635D-01-8.19515D-01-7.68056D-02-4.86839D-01 4.17013D-02
+-4.00000D-01 4.75318D-01-4.32455D-01-1.61098D-01-7.73234D-01 1.61714D-01
+-7.72886D-01 1.43183D-01-1.05968D+00-1.77323D-01-1.02415D+00 2.62399D-01
+-4.09195D-02-2.22216D-01-2.10129D-02 3.71517D+04 4.53130D-16-6.68830D-01
+-5.46437D-01-8.87472D-01-2.44864D-01-1.00073D+00 3.86157D-01-8.13915D-01
+ 4.00662D-01-1.17818D-01-2.50209D-01-1.17844D-01 2.50229D-01-2.59470D-01
+ 1.14486D-01-2.65648D-01-1.08534D-01-7.88894D-01 1.26904D-01-9.09876D-01
+-2.22216D-01 3.70024D+08-4.23562D-15 8.96164D+00-7.15953D+01 3.56514D+01
+-2.12018D+01 4.21140D+01 1.75634D+01 3.83881D+01 3.86364D+01 6.09786D+00
+-2.07528D+01 4.69392D+00 2.06744D+01 4.66179D+00-2.37831D+01-1.21798D+01
+ 2.23625D+01-1.09075D+01-2.89016D+00-1.72330D+01 3.23349D+00-1.21614D+01
+K10R
+ 1.74444D-06 1.74444D-06 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 4.36111D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 8.72222D-07 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 8.72222D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 4.36111D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07 0.00000D+00 8.72222D-07
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 4.36111D-07 8.72222D-07 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 2.18056D-05 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 2.18056D-05 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 6.53333D-02 6.77626D-21-6.77626D-21 1.09028D-05-1.09028D-05
+ 3.27083D-05-5.45139D-05-3.27083D-05-5.45139D-05-1.09028D-05-1.09028D-05
+ 5.45139D-05-3.27083D-05-5.45139D-05-3.27083D-05 5.45139D-05 3.27083D-05
+-5.45139D-05 3.27083D-05 3.27083D-05 5.45139D-05-3.27083D-05 5.45139D-05
+RUF0
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+-1.00000D+03 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+PUU 
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+PUV 
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+PUA 
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+M10R
+ 1.74444D-06 1.74444D-06 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 4.36111D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 8.72222D-07 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 8.72222D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 4.36111D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07 0.00000D+00 8.72222D-07
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 4.36111D-07 8.72222D-07 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 2.18056D-05 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 2.18056D-05 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 6.53333D-02 6.77626D-21-6.77626D-21 1.09028D-05-1.09028D-05
+ 3.27083D-05-5.45139D-05-3.27083D-05-5.45139D-05-1.09028D-05-1.09028D-05
+ 5.45139D-05-3.27083D-05-5.45139D-05-3.27083D-05 5.45139D-05 3.27083D-05
+-5.45139D-05 3.27083D-05 3.27083D-05 5.45139D-05-3.27083D-05 5.45139D-05
+
+
+
+             T O T A L   F O R C E S   A N D   M O M E N T S
+           FX           FY           FZ           MX           MY           MZ
+ -1.00000D+03  0.00000D+00  0.00000D+00  0.00000D+00  0.00000D+00  0.00000D+00
+NUU 
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+NUV 
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+NUA 
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+NTDT
+ 2.20605D-03-1.40362D-02 4.39044D-03 7.70972D-03-1.34733D-02-1.93258D-02
+-1.39074D-02 2.43030D-02-3.20647D-02-2.71748D-02-2.58125D-02 4.85249D-02
+-5.18869D-02-2.87960D-02-6.03657D-02-1.04690D-02-9.44767D-02 5.62605D-03
+-1.94280D-01 9.66515D-02-2.23854D-02-4.83382D-03 2.20536D-04
+IUV 
+ 4.41210D+01-2.80724D+02 8.78087D+01 1.54194D+02-2.69467D+02-3.86516D+02
+-2.78148D+02 4.86060D+02-6.41295D+02-5.43497D+02-5.16249D+02 9.70498D+02
+-1.03774D+03-5.75921D+02-1.20731D+03-2.09379D+02-1.88953D+03 1.12521D+02
+-3.88559D+03 1.93303D+03-4.47708D+02-9.66763D+01 4.41072D+00
+IUA 
+ 8.82421D+05-5.61448D+06 1.75617D+06 3.08389D+06-5.38933D+06-7.73032D+06
+-5.56296D+06 9.72120D+06-1.28259D+07-1.08699D+07-1.03250D+07 1.94100D+07
+-2.07547D+07-1.15184D+07-2.41463D+07-4.18758D+06-3.77907D+07 2.25042D+06
+-7.77119D+07 3.86606D+07-8.95415D+06-1.93353D+06 8.82144D+04
+
+
+
+           LARGEST DIAGONAL ELEMENT OF STIFFNESS MATRIX ..... = 5.45364E+08
+           SMALLEST DIAGONAL ELEMENT OF STIFFNESS MATRIX .... = 1.13585E+04
+
+           LARGEST DIAGONAL ELEMENT OF THE FACTORIZED MATRIX  = 3.70024E+08
+           SMALLEST DIAGONAL ELEMENT OF THE FACTORIZED MATRIX = 6.29668E+03
+
+
+
+1
+ COMPONENTS  OF  DISPLACEMENTS  AND  ROTATIONS
+ ---------------------------------------------
+
+
+ S T E P  N U M B E R =    1                      T I M E = 1.00000E-04
+
+
+  NODE     X           Y           Z           XT          YT          ZT
+          1  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          2  2.2061E-03 -1.4036E-02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          3  4.3904E-03  7.7097E-03  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          4  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          5 -1.3473E-02 -1.9326E-02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          6 -1.1359E-02 -1.5861E-02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          7 -1.1359E-02  6.1930E-03  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          8 -1.3907E-02  2.4303E-02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          9 -3.2065E-02 -2.7175E-02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         10 -3.3412E-02 -1.5861E-02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         11 -3.3412E-02  6.1930E-03  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         12 -2.5812E-02  4.8525E-02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         13 -5.1887E-02 -2.8796E-02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         14 -6.0366E-02 -1.0469E-02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         15 -9.4477E-02  5.6261E-03  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         16 -1.9428E-01  9.6652E-02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         17 -2.2385E-02 -4.8338E-03  0.0000E+00  0.0000E+00  0.0000E+00  2.2054E-04
+
+
+ MAXIMUM DISPLACEMENT:
+ NODE =    16   MAX DISPL  =  2.1699E-01
+
+
+
+
+
+1
+ COMPONENTS OF VELOCITIES AND ANGULAR VELOCITIES
+ -----------------------------------------------
+
+
+ S T E P  N U M B E R =    1                      T I M E = 1.00000E-04
+
+
+  NODE     X           Y           Z           XT          YT          ZT
+          1  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          2  4.4121E+01 -2.8072E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          3  8.7809E+01  1.5419E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          4  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          5 -2.6947E+02 -3.8652E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          6 -2.2717E+02 -3.1721E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          7 -2.2717E+02  1.2386E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          8 -2.7815E+02  4.8606E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          9 -6.4129E+02 -5.4350E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         10 -6.6824E+02 -3.1721E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         11 -6.6824E+02  1.2386E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         12 -5.1625E+02  9.7050E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         13 -1.0377E+03 -5.7592E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         14 -1.2073E+03 -2.0938E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         15 -1.8895E+03  1.1252E+02  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         16 -3.8856E+03  1.9330E+03  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         17 -4.4771E+02 -9.6676E+01  0.0000E+00  0.0000E+00  0.0000E+00  4.4107E+00
+
+
+ MAXIMUM VELOCITY:
+ NODE =    16   MAX VELOC  =  4.3399E+03
+
+
+
+
+
+1
+ COMPONENTS OF ACCELERATIONS AND ANGULAR ACCELERATIONS
+ -----------------------------------------------------
+
+
+ S T E P  N U M B E R =    1                      T I M E = 1.00000E-04
+
+
+  NODE     X           Y           Z           XT          YT          ZT
+          1  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          2  8.8242E+05 -5.6145E+06  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          3  1.7562E+06  3.0839E+06  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          4  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          5 -5.3893E+06 -7.7303E+06  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          6 -4.5434E+06 -6.3442E+06  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          7 -4.5434E+06  2.4772E+06  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          8 -5.5630E+06  9.7212E+06  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+          9 -1.2826E+07 -1.0870E+07  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         10 -1.3365E+07 -6.3442E+06  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         11 -1.3365E+07  2.4772E+06  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         12 -1.0325E+07  1.9410E+07  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         13 -2.0755E+07 -1.1518E+07  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         14 -2.4146E+07 -4.1876E+06  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         15 -3.7791E+07  2.2504E+06  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         16 -7.7712E+07  3.8661E+07  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+         17 -8.9542E+06 -1.9335E+06  0.0000E+00  0.0000E+00  0.0000E+00  8.8214E+04
+
+
+ MAXIMUM ACCELERATION:
+ NODE =    16   MAX ACCEL  =  8.6797E+07
+
+
+
+1
+
+
+ GLOBAL STRESS COMPONENTS OF ISOPARAMETRIC 2/D ELEMENTS FOR GROUP     1
+ ----------------------------------------------------------------------
+
+ ELEMENT /
+ IR IS     STRESS-XX  STRESS-YY  STRESS-XY  STRESS-ZZ  STRESS-1  STRESS-2  ALFA
+
+       1
+  1  1    -6.766E-01 -1.562E+00 -1.519E+00 -6.715E-01  4.63E-01 -2.70E+00 -3.69E+01
+ EF.STRE.= 2.776E+00
+  1  2    -6.644E-01 -1.562E+00 -1.519E+00 -6.679E-01  4.71E-01 -2.70E+00 -3.68E+01
+ EF.STRE.= 2.779E+00
+  2  1    -6.766E-01 -3.894E+00 -1.519E+00 -1.371E+00 -7.28E-02 -4.50E+00 -2.17E+01
+ EF.STRE.= 3.939E+00
+  2  2    -6.644E-01 -3.894E+00 -1.519E+00 -1.367E+00 -6.23E-02 -4.50E+00 -2.16E+01
+ EF.STRE.= 3.946E+00
+
+       2
+  1  1    -3.916E-02 -3.194E-01  5.850E-01 -1.076E-01  4.22E-01 -7.81E-01  3.83E+01
+ EF.STRE.= 1.044E+00
+  1  2     2.519E-01 -3.194E-01  5.850E-01 -2.027E-02  6.17E-01 -6.85E-01  3.20E+01
+ EF.STRE.= 1.128E+00
+  2  1    -3.916E-02 -3.604E-01  5.850E-01 -1.199E-01  4.07E-01 -8.06E-01  3.73E+01
+ EF.STRE.= 1.054E+00
+  2  2     2.519E-01 -3.604E-01  5.850E-01 -3.257E-02  6.06E-01 -7.15E-01  3.12E+01
+ EF.STRE.= 1.144E+00
+
+       3
+  1  1     5.222E-01  4.520E+00 -7.777E-01  1.513E+00  4.67E+00  3.76E-01  1.01E+02
+ EF.STRE.= 3.850E+00
+  1  2     2.768E-01  4.520E+00 -7.777E-01  1.439E+00  4.66E+00  1.39E-01  1.00E+02
+ EF.STRE.= 4.030E+00
+  2  1     5.222E-01  1.080E+00 -7.777E-01  4.808E-01  1.63E+00 -2.50E-02  1.25E+02
+ EF.STRE.= 1.467E+00
+  2  2     2.768E-01  1.080E+00 -7.777E-01  4.071E-01  1.55E+00 -1.97E-01  1.21E+02
+ EF.STRE.= 1.540E+00
+
+       4
+  1  1    -5.977E-01 -5.401E-01 -1.045E+00 -3.413E-01  4.76E-01 -1.61E+00  1.34E+02
+ EF.STRE.= 1.824E+00
+  1  2    -1.364E-01 -5.401E-01 -1.045E+00 -2.029E-01  7.26E-01 -1.40E+00 -3.95E+01
+ EF.STRE.= 1.848E+00
+  2  1    -5.977E-01 -1.586E+00 -1.045E+00 -6.550E-01  6.38E-02 -2.25E+00 -3.23E+01
+ EF.STRE.= 2.049E+00
+  2  2    -1.364E-01 -1.586E+00 -1.045E+00 -5.167E-01  4.10E-01 -2.13E+00 -2.76E+01
+ EF.STRE.= 2.229E+00
+
+       5
+  1  1     2.857E+00  5.343E+00  1.070E+00  2.460E+00  5.74E+00  2.46E+00  6.96E+01
+ EF.STRE.= 3.280E+00
+  1  2     1.505E+00  5.343E+00  1.070E+00  2.055E+00  5.62E+00  1.23E+00  7.54E+01
+ EF.STRE.= 4.044E+00
+  2  1     2.857E+00  2.116E+00  1.070E+00  1.492E+00  3.62E+00  1.35E+00  3.54E+01
+ EF.STRE.= 2.198E+00
+  2  2     1.505E+00  2.116E+00  1.070E+00  1.086E+00  2.92E+00  6.98E-01  5.30E+01
+ EF.STRE.= 2.058E+00
+
+       6
+  1  1    -1.636E+00  4.049E-01 -6.920E-01 -3.692E-01  6.17E-01 -1.85E+00  1.07E+02
+ EF.STRE.= 2.149E+00
+  1  2    -6.854E-01  4.049E-01 -6.920E-01 -8.416E-02  7.41E-01 -1.02E+00  1.16E+02
+ EF.STRE.= 1.527E+00
+  2  1    -1.636E+00 -5.295E-01 -6.920E-01 -6.495E-01 -1.97E-01 -1.97E+00  1.16E+02
+ EF.STRE.= 1.594E+00
+  2  2    -6.854E-01 -5.295E-01 -6.920E-01 -3.645E-01  8.89E-02 -1.30E+00  1.32E+02
+ EF.STRE.= 1.230E+00
+
+       7
+  1  1    -6.802E+00 -1.781E+00 -2.014E+00 -2.575E+00 -1.07E+00 -7.51E+00  1.09E+02
+ EF.STRE.= 5.832E+00
+  1  2    -2.257E+00 -1.781E+00 -2.014E+00 -1.211E+00  8.87E-03 -4.05E+00  1.32E+02
+ EF.STRE.= 3.604E+00
+  2  1    -6.802E+00 -9.874E-01 -2.014E+00 -2.337E+00 -3.58E-01 -7.43E+00  1.07E+02
+ EF.STRE.= 6.320E+00
+  2  2    -2.257E+00 -9.874E-01 -2.014E+00 -9.733E-01  4.89E-01 -3.73E+00  1.26E+02
+ EF.STRE.= 3.715E+00
+
+       8
+  1  1    -1.731E+01  4.381E+00 -3.884E+00 -3.878E+00  5.06E+00 -1.80E+01  9.99E+01
+ EF.STRE.= 2.012E+01
+  1  2    -2.997E+00  4.381E+00 -3.884E+00  4.152E-01  6.05E+00 -4.66E+00  1.13E+02
+ EF.STRE.= 9.282E+00
+  2  1    -1.731E+01 -2.107E+00 -3.884E+00 -5.824E+00 -1.17E+00 -1.82E+01  1.04E+02
+ EF.STRE.= 1.528E+01
+  2  2    -2.997E+00 -2.107E+00 -3.884E+00 -1.531E+00  1.36E+00 -6.46E+00  1.32E+02
+ EF.STRE.= 6.848E+00
+
+
+ MAXIMUM EFFECTIVE STRESS:
+ ELEMENT =     8  IR =  1  IS =  1  LAYER =  1  MAX.EFF.STR. =  2.012E+01
+
+
+
+
+ R E P O R T   O N   E N D   O F   S T E P     1
+
+      MAXIMUM EFFECTIVE STRESS:
+      GROUP =    1, ELEMENT =     8,  MAX.EFF.STRESS =  2.012D+01
+
+
+K-10
+ 2.27170D+04 2.27170D+04 0.00000D+00 2.06386D+04-4.44431D-02-2.99190D-01
+ 2.21832D+04 2.17410D-02 1.45241D-01 4.44431D-02 1.92110D+04-1.70195D-02
+-9.17110D-02 2.22216D-01-3.11495D-01 1.87386D+04 1.70101D-01 3.50450D-02
+ 5.79421D-02-3.11495D-01 2.22216D-01 1.91565D+04 3.76809D-02-3.81170D-02
+-2.20628D-01-3.42864D-01 1.86821D+04-1.72992D-01 3.39169D-02-3.02707D-02
+-3.14044D-01-2.44594D-01 2.21384D+04 5.54021D-03 5.68317D-03 2.39280D-02
+ 1.71748D-01 2.03116D+04 1.48811D-02 1.23468D-02 1.10225D-02-3.53546D-01
+-5.25540D-02 2.21384D+04-1.51179D-03-7.37183D-04-2.34898D-02 1.72236D-01
+ 2.03114D+04-1.48753D-02 3.45478D-03 1.39801D-03-3.54461D-01 5.27035D-02
+ 1.08213D+04-3.87628D-04 1.75460D-04 4.72890D-02 1.49037D-01 7.11234D+03
+-4.22951D-01 1.21494D-03-4.96728D-04-3.33882D-01-4.56047D-02 1.49236D+04
+-4.63025D-01-5.09025D-01 1.31848D-03-5.73164D-04-2.43347D-01-3.19636D-01
+ 1.84965D+04-1.96098D-01 1.07259D-01 6.82219D-03 1.52781D-03-6.46189D-04
+-3.44685D-01-2.28023D-01 1.61391D+04-1.82184D-02-4.56288D-01-1.15078D-03
+ 2.91791D-04 2.43352D-01-3.19637D-01 1.80326D+04 1.80935D-01 1.68535D-01
+-6.66681D-02 1.33445D-03-3.32637D-04-3.44691D-01 2.28024D-01 8.89541D+03
+ 5.11328D-02-3.41192D-01 2.21163D-04 2.53711D-04 3.37946D-04-8.79050D-05
+-4.72906D-02 1.49037D-01 6.29668D+03 5.48498D-01 3.07762D-02 6.00381D-02
+ 6.75540D-04 7.76598D-04 1.06211D-03-2.59295D-04-3.33887D-01 4.56048D-02
+ 3.65362D+04-1.34635D-01-8.19515D-01-7.68056D-02-4.86839D-01 4.17013D-02
+-4.00000D-01 4.75318D-01-4.32455D-01-1.61098D-01-7.73234D-01 1.61714D-01
+-7.72886D-01 1.43183D-01-1.05968D+00-1.77323D-01-1.02415D+00 2.62399D-01
+-4.09195D-02-2.22216D-01-2.10129D-02 3.71517D+04 4.53130D-16-6.68830D-01
+-5.46437D-01-8.87472D-01-2.44864D-01-1.00073D+00 3.86157D-01-8.13915D-01
+ 4.00662D-01-1.17818D-01-2.50209D-01-1.17844D-01 2.50229D-01-2.59470D-01
+ 1.14486D-01-2.65648D-01-1.08534D-01-7.88894D-01 1.26904D-01-9.09876D-01
+-2.22216D-01 3.70024D+08-4.23562D-15 8.96164D+00-7.15953D+01 3.56514D+01
+-2.12018D+01 4.21140D+01 1.75634D+01 3.83881D+01 3.86364D+01 6.09786D+00
+-2.07528D+01 4.69392D+00 2.06744D+01 4.66179D+00-2.37831D+01-1.21798D+01
+ 2.23625D+01-1.09075D+01-2.89016D+00-1.72330D+01 3.23349D+00-1.21614D+01
+K10R
+ 1.74444D-06 1.74444D-06 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 4.36111D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 8.72222D-07 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 8.72222D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 4.36111D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07 0.00000D+00 8.72222D-07
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 4.36111D-07 8.72222D-07 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 2.18056D-05 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 2.18056D-05 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 6.53333D-02 6.77626D-21-6.77626D-21 1.09028D-05-1.09028D-05
+ 3.27083D-05-5.45139D-05-3.27083D-05-5.45139D-05-1.09028D-05-1.09028D-05
+ 5.45139D-05-3.27083D-05-5.45139D-05-3.27083D-05 5.45139D-05 3.27083D-05
+-5.45139D-05 3.27083D-05 3.27083D-05 5.45139D-05-3.27083D-05 5.45139D-05
+RUF0
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+-1.00000D+03 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+PUU 
+ 2.20605D-03-1.40362D-02 4.39044D-03 7.70972D-03-1.34733D-02-1.93258D-02
+-1.39074D-02 2.43030D-02-3.20647D-02-2.71748D-02-2.58125D-02 4.85249D-02
+-5.18869D-02-2.87960D-02-6.03657D-02-1.04690D-02-9.44767D-02 5.62605D-03
+-1.94280D-01 9.66515D-02-2.23854D-02-4.83382D-03 2.20536D-04
+PUV 
+ 4.41210D+01-2.80724D+02 8.78087D+01 1.54194D+02-2.69467D+02-3.86516D+02
+-2.78148D+02 4.86060D+02-6.41295D+02-5.43497D+02-5.16249D+02 9.70498D+02
+-1.03774D+03-5.75921D+02-1.20731D+03-2.09379D+02-1.88953D+03 1.12521D+02
+-3.88559D+03 1.93303D+03-4.47708D+02-9.66763D+01 4.41072D+00
+PUA 
+ 8.82421D+05-5.61448D+06 1.75617D+06 3.08389D+06-5.38933D+06-7.73032D+06
+-5.56296D+06 9.72120D+06-1.28259D+07-1.08699D+07-1.03250D+07 1.94100D+07
+-2.07547D+07-1.15184D+07-2.41463D+07-4.18758D+06-3.77907D+07 2.25042D+06
+-7.77119D+07 3.86606D+07-8.95415D+06-1.93353D+06 8.82144D+04
+M10R
+ 1.74444D-06 1.74444D-06 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00
+ 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00
+ 4.36111D-07 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 0.00000D+00 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07
+ 1.74444D-06 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 8.72222D-07 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 8.72222D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00 1.74444D-06
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07
+ 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00
+ 2.18056D-07 0.00000D+00 1.74444D-06 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 2.18056D-07 1.74444D-06 0.00000D+00 4.36111D-07
+ 0.00000D+00 0.00000D+00 0.00000D+00 2.18056D-07 0.00000D+00 8.72222D-07
+ 0.00000D+00 4.36111D-07 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00
+ 0.00000D+00 4.36111D-07 8.72222D-07 0.00000D+00 4.36111D-07 0.00000D+00
+ 0.00000D+00 0.00000D+00 0.00000D+00 0.00000D+00 4.36111D-07 0.00000D+00
+ 2.18056D-05 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 2.18056D-07 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00
+ 1.09028D-06 0.00000D+00 1.09028D-06 2.18056D-05 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 2.18056D-07
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06 0.00000D+00 1.09028D-06
+ 0.00000D+00 6.53333D-02 6.77626D-21-6.77626D-21 1.09028D-05-1.09028D-05
+ 3.27083D-05-5.45139D-05-3.27083D-05-5.45139D-05-1.09028D-05-1.09028D-05
+ 5.45139D-05-3.27083D-05-5.45139D-05-3.27083D-05 5.45139D-05 3.27083D-05
+-5.45139D-05 3.27083D-05 3.27083D-05 5.45139D-05-3.27083D-05 5.45139D-05
